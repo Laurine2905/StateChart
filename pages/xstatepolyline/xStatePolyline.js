@@ -19,9 +19,64 @@ const polylineMachine = createMachine(
         /** @xstate-layout N4IgpgJg5mDOIC5gF8A0IB2B7CdGgAcsAbATwBkBLDMfEI2SgF0qwzoA9EBaANnVI9eAOgAM4iZMkB2ZGnokK1MMMoRitJAsYs2nRABYATAMQAOAIzCD0gJwXetgwGZezgw9ty5QA */
         id: "polyLine",
         initial: "idle",
-        states : {
-            idle: {
-            }
+    states: {
+      "Initial state": {
+        on: {
+          MOUSECLICK: {
+            target: "Drawing",
+            actions: {
+              type: "createLine",
+            },
+          },
+        },
+      },
+      Drawing: {
+        on: {
+          MOUSEMOVE: {
+            target: "Drawing",
+            actions: {
+              type: "setLastPoint",
+            },
+          },
+          MOUSECLICK: [
+            {
+              target: "Drawing",
+              cond: "pasPlein",
+            },
+            {
+              target: "Initial state",
+              actions: {
+                type: "saveLine",
+              },
+            },
+          ],
+          "Key pressed: escape": {
+            target: "Initial state",
+            actions: {
+              type: "abandon",
+            },
+          },
+          "Key pressed: enter": [
+            {
+              target: "Initial state",
+              cond: "plusDeDeuxPoints",
+              actions: {
+                type: "saveLine",
+              },
+            },
+            {
+              target: "Drawing",
+            },
+          ],
+          "Key pressed: Backspace": {
+            target: "Drawing",
+            cond: "plusDeDeuxPoints",
+            actions: {
+              type: "removeLastPoint",
+            },
+          },
+        },
+      }
         }
     },
     // Quelques actions et guardes que vous pouvez utiliser dans votre machine
